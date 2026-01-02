@@ -17,7 +17,7 @@ using TOML: parsefile as parsefile2
 using XLSX: readtable
 
 ########################################
-# String
+# Text
 ########################################
 
 function text_index(st, an, nd)
@@ -25,10 +25,6 @@ function text_index(st, an, nd)
     split(st, an; limit = nd + 1)[nd]
 
 end
-
-########################################
-# Text
-########################################
 
 function text_low(st)
 
@@ -42,39 +38,39 @@ function text_title(s1)
 
     for pa in (
         '_' => ' ',
-        r"'m"i => "'m",
-        r"'re"i => "'re",
-        r"'s"i => "'s",
-        r"'ve"i => "'ve",
-        r"'d"i => "'d",
-        r"1st"i => "1st",
-        r"2nd"i => "2nd",
-        r"3rd"i => "3rd",
+        (
+            Regex(s3, "i") => s3 for
+            s3 in ("'d", "'m", "'re", "'s", "'ve", "1st", "2nd", "3rd")
+        )...,
         r"(?<=\d)th"i => "th",
-        r"(?<= )a(?= )"i => 'a',
-        r"(?<= )an(?= )"i => "an",
-        r"(?<= )and(?= )"i => "and",
-        r"(?<= )as(?= )"i => "as",
-        r"(?<= )at(?= )"i => "at",
-        r"(?<= )but(?= )"i => "but",
-        r"(?<= )by(?= )"i => "by",
-        r"(?<= )for(?= )"i => "for",
-        r"(?<= )from(?= )"i => "from",
-        r"(?<= )in(?= )"i => "in",
-        r"(?<= )into(?= )"i => "into",
-        r"(?<= )nor(?= )"i => "nor",
-        r"(?<= )of(?= )"i => "of",
-        r"(?<= )off(?= )"i => "off",
-        r"(?<= )on(?= )"i => "on",
-        r"(?<= )onto(?= )"i => "onto",
-        r"(?<= )or(?= )"i => "or",
-        r"(?<= )out(?= )"i => "out",
-        r"(?<= )over(?= )"i => "over",
-        r"(?<= )the(?= )"i => "the",
-        r"(?<= )to(?= )"i => "to",
-        r"(?<= )up(?= )"i => "up",
-        r"(?<= )vs(?= )"i => "vs",
-        r"(?<= )with(?= )"i => "with",
+        (
+            Regex("(?<= )$s3(?= )", "i") => s3 for s3 in (
+                "a",
+                "an",
+                "and",
+                "as",
+                "at",
+                "but",
+                "by",
+                "for",
+                "from",
+                "in",
+                "into",
+                "nor",
+                "of",
+                "off",
+                "on",
+                "onto",
+                "or",
+                "out",
+                "over",
+                "the",
+                "to",
+                "up",
+                "vs",
+                "with",
+            )
+        )...,
     )
 
         s2 = replace(s2, pa)
@@ -106,23 +102,67 @@ function text_limit(s1, um)
 end
 
 ########################################
-# Dictionary
+# Path
 ########################################
 
-function pair_merge(::Any, an)
+function path_short(p1, p2 = pwd())
+
+    p1[(length(p2) + 2):end]
+
+end
+
+function is_path(pa, u1)
+
+    u2 = 0
+
+    while u2 < u1
+
+        if ispath(pa)
+
+            return true
+
+        end
+
+        sleep(1)
+
+        u2 += 1
+
+        @info "Waited for $pa ($u2 / $u1)."
+
+    end
+
+    false
+
+end
+
+function read_path(pa)
+
+    run(`open --background $pa`; wait = false)
+
+end
+
+########################################
+# Pair
+########################################
+
+function pair_merge(_, an)
 
     an
 
 end
 
-function pair_merge(d1::AbstractDict, d2)
+function pair_merge(d1::AbstractDict, d2::AbstractDict)
+
+    a1_ = keys(d1)
+
+    a2_ = keys(d2)
 
     d3 = Dict{
-        Union{eltype(keys(d1)), eltype(keys(d2))},
+        Union{eltype(a1_), eltype(a2_)},
         Union{eltype(values(d1)), eltype(values(d2))},
     }()
 
-    for an in union(keys(d1), keys(d2))
+    for an in union(a1_, a2_)
 
         d3[an] = if haskey(d1, an) && haskey(d2, an)
 
@@ -144,65 +184,29 @@ function pair_merge(d1::AbstractDict, d2)
 
 end
 
-function read_dictionary(pa)
+function read_pair(pa)
 
-    if endswith(pa, "toml")
+    (
+        if endswith(pa, "toml")
 
-        parsefile2(pa)
+            parsefile2
 
-    else
+        else
 
-        parsefile(pa)
+            parsefile
 
-    end
+        end
+    )(pa)
 
 end
 
-function write_dictionary(pa, di)
+function write_pair(pa, di)
 
     open(pa, "w") do io
 
         print(io, di, 2)
 
     end
-
-end
-
-########################################
-# Path
-########################################
-
-function path_short(p1, p2 = pwd())
-
-    p1[(length(p2) + 2):end]
-
-end
-
-function is_path(pa, u1)
-
-    u2 = 0
-
-    bo = false
-
-    while !bo && u2 < u1
-
-        sleep(1)
-
-        u2 += 1
-
-        @info "Waited for $pa ($u2 / $u1)."
-
-        bo = ispath(pa)
-
-    end
-
-    bo
-
-end
-
-function read_path(pa)
-
-    run(`open --background $pa`; wait = false)
 
 end
 
