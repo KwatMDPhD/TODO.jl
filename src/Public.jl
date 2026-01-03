@@ -1,5 +1,9 @@
 module Public
 
+const P1 = pkgdir(Public, "in")
+
+const P2 = pkgdir(Public, "ou")
+
 # ------------------------------------ #
 
 using CSV: read
@@ -17,73 +21,12 @@ using TOML: parsefile as parsefile2
 using XLSX: readtable
 
 ########################################
-# Text
+# String
 ########################################
 
 function text_index(st, an, nd)
 
     split(st, an; limit = nd + 1)[nd]
-
-end
-
-function text_low(st)
-
-    replace(lowercase(st), r"[^._0-9a-z]" => '_')
-
-end
-
-function text_title(s1)
-
-    s2 = uppercasefirst(s1)
-
-    for pa in (
-        '_' => ' ',
-        (
-            Regex(s3, "i") => s3 for
-            s3 in ("'d", "'m", "'re", "'s", "'ve", "1st", "2nd", "3rd")
-        )...,
-        r"(?<=\d)th"i => "th",
-        (
-            Regex("(?<= )$s3(?= )", "i") => s3 for s3 in (
-                "a",
-                "an",
-                "and",
-                "as",
-                "at",
-                "but",
-                "by",
-                "for",
-                "from",
-                "in",
-                "into",
-                "nor",
-                "of",
-                "off",
-                "on",
-                "onto",
-                "or",
-                "out",
-                "over",
-                "the",
-                "to",
-                "up",
-                "vs",
-                "with",
-            )
-        )...,
-    )
-
-        s2 = replace(s2, pa)
-
-    end
-
-    s2
-
-end
-
-function text_space(st)
-
-    replace(strip(st), r" +" => ' ')
 
 end
 
@@ -104,36 +47,6 @@ end
 ########################################
 # Path
 ########################################
-
-function path_short(p1, p2 = pwd())
-
-    p1[(length(p2) + 2):end]
-
-end
-
-function is_path(pa, u1)
-
-    u2 = 0
-
-    while u2 < u1
-
-        if ispath(pa)
-
-            return true
-
-        end
-
-        sleep(1)
-
-        u2 += 1
-
-        @info "Waited for $pa ($u2 / $u1)."
-
-    end
-
-    false
-
-end
 
 function read_path(pa)
 
@@ -214,6 +127,14 @@ end
 # Table
 ########################################
 
+function make_part(A)
+
+    st_ = names(A)
+
+    st_[1], A[!, 1], st_[2:end], Matrix(A[!, 2:end])
+
+end
+
 function read_table(pa; ke_...)
 
     @assert isfile(pa) pa
@@ -235,14 +156,6 @@ end
 function read_sheet(pa, st; ke_...)
 
     DataFrame(readtable(pa, st; infer_eltypes = true, ke_...))
-
-end
-
-function make_part(A)
-
-    st_ = names(A)
-
-    st_[1], A[!, 1], st_[2:end], Matrix(A[!, 2:end])
 
 end
 
