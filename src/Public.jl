@@ -12,6 +12,8 @@ using CodecZlib: GzipDecompressor, transcode
 
 using DataFrames: DataFrame
 
+using Dates: @dateformat_str, Date
+
 using JSON: parsefile, print
 
 using Mmap: mmap
@@ -51,6 +53,12 @@ end
 function read_path(pa)
 
     run(`open --background $pa`; wait = false)
+
+end
+
+function make_date(st)
+
+    Date(st, dateformat"yyyy mm dd")
 
 end
 
