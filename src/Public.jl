@@ -632,7 +632,7 @@ end
 
 function pair_title(s1, s2 = "")
 
-    di = Dict("text" => s1)
+    di = Dict{String, Any}("text" => s1)
 
     if !isempty(s2)
 
