@@ -4,7 +4,7 @@ using Public
 
 for nd in 1:1
 
-    @info "🎬 Testing $nd"
+    @info "🎬 $nd"
 
     run(`julia --project $nd.jl`)
 
