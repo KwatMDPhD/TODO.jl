@@ -40,6 +40,14 @@ using XLSX: readtable
 
 ########################################
 
+function make_function!(fu, an_)
+
+    map!(fu, an_, an_)
+
+end
+
+########################################
+
 function number_minimum!(nu_, n1)
 
     n2 = minimum(nu_) - n1
