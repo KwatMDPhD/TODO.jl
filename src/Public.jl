@@ -365,11 +365,7 @@ end
 
 function write_pair(pa, di)
 
-    open(pa, "w") do io
-
-        print(io, di, 2)
-
-    end
+    open(io -> print(io, di, 2), pa, "w")
 
 end
 
@@ -550,7 +546,7 @@ function write_html(p1, pa_, s1, he = DA)
 
     end
 
-    s3 = join(("<script src=\"$p3\"></script>" for p3 in pa_), '\n')
+    s3 = join("<script src=\"$p3\"></script>\n" for p3 in pa_)
 
     write(
         p2,
