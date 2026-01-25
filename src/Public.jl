@@ -590,6 +590,12 @@ function pair_font(nu)
 
 end
 
+function pair_tickfont(nu)
+
+    "tickfont" => Dict("size" => nu)
+
+end
+
 function pair_title(st)
 
     "title" => Dict("text" => st)
